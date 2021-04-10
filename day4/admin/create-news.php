@@ -1,4 +1,5 @@
 <?php
+include 'functions/functions.php';
   if($_SERVER['REQUEST_METHOD'] == 'POST')
   {
     if(!empty($_POST['submit']))
@@ -8,15 +9,10 @@
       $text     = $_POST['text'];
 
       if(isset($_FILES['image']) and !empty($_FILES['image'])){
-          
-          $errors= array();
-
-          $file_name  = $_FILES['image']['name'];
-          $file_size  = $_FILES['image']['size'];
-          $file_tmp   = $_FILES['image']['tmp_name'];
-          $file_type  = $_FILES['image']['type'];
-
-          move_uploaded_file($file_tmp,"uploads/".$file_name);
+          if(uploadImage($_FILES['image']))
+            echo "<script>alert('Upload oldu');</script>";
+          else
+            echo "<script>alert('Upload olmadi');</script>";
       }
     }
   }

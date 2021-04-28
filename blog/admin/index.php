@@ -1,5 +1,10 @@
 <?php
-    include 'config/config.php';
+session_start();
+//print_r($_SESSION); exit();
+    if($_SESSION['logged_in'] == 1)
+    {
+        include 'config/config.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -369,3 +374,9 @@
 </body>
 
 </html>
+
+<?php 
+    }else{
+      header('Location: login.php');  
+    }
+?>

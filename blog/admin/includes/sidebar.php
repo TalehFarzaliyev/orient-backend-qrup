@@ -39,15 +39,18 @@
                         <h6 class="collapse-header">Xeber modulu</h6>
                         <a class="collapse-item" href="list-xeberler.php">Xeberler Siyahi</a>
                         <a class="collapse-item" href="create-news.php">Xeber Elave et</a>
+                        <a class="collapse-item" href="logout.php">Logout</a>
                     </div>
                 </div>
+
             </li>
 
             <!-- Nav Item - Charts -->
             <li class="nav-item">
                 <a class="nav-link" href="charts.html">
                     <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Tenzimlemeler</span></a>
+                    <span>
+                    </span>
             </li>
 
             <!-- Divider -->

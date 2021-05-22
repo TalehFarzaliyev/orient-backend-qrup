@@ -2,6 +2,16 @@
 session_start();
 if($_SESSION['logged_in'] == 1)
 {
+    include '../config/config.php';
+
+    if(isset($_GET['id']) and !empty($_GET['id']))
+    {
+        $menu_id = intval($_GET['id']);
+        mysqli_query($conn,"DELETE FROM `menu` WHERE `id`=$menu_id");
+        mysqli_query($conn,"DELETE FROM `menu_translation` WHERE `menu_id`=$menu_id");
+        header('menu.php');
+    }
+
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -63,8 +73,7 @@ if($_SESSION['logged_in'] == 1)
                                                 </tfoot>
                                                 <tbody>
                                                 <?php
-                                                include '../config/config.php';
-                                                include '../config/vars.php';
+
                                                 $select_sql = "SELECT * FROM orient_ressamlar.menu_translation mt 
                                                                INNER JOIN orient_ressamlar.menu m ON mt.menu_id=m.id 
                                                                Where mt.lang_id=1 and m.status=1;";
@@ -75,7 +84,7 @@ if($_SESSION['logged_in'] == 1)
                                                         <td class="sorting_1"><?=$row['name'];?></td>
                                                         <td>
                                                             <a href="form-menu.php?menu=<?=$row['id'];?>"   class="btn btn-success">Redakte et</a>
-                                                            <a href="menu.php?menu=<?=$row['id'];?>" class="btn btn-danger">Sil</a>
+                                                            <a href="menu.php?id=<?=$row['id'];?>" class="btn btn-danger">Sil</a>
                                                         </td>
                                                     </tr>
                                                     <?php

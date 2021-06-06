@@ -8,18 +8,22 @@
         {
             if(isset($_POST['post-type']) and !empty($_POST['post-type']) and $_POST['post-type'] == 'create')
             {
-                $parent_id      = (isset($_POST['parent_id'])) ? intval($_POST['parent_id']) : 0;
+                //print_r($_POST);
+                $list = implode(',',$_POST['parent_id']);
+                //print_r($list); exit();
+
+                //$parent_id      = (isset($_POST['parent_id'])) ? intval($_POST['parent_id']) : 0;
                 $order_number   = (isset($_POST['order_number'])) ? intval($_POST['order_number']) : 0;
                 $status         = (isset($_POST['status'])) ? intval($_POST['status']) : 0;
                 $translation    = (isset($_POST['translation']))? $_POST['translation'] : [];
 
-                $insert_menu    = "INSERT INTO `menu`(`parent_id`,`order_number`,`status`) VALUES ('$parent_id','$order_number','$status')";
+                $insert_menu    = "INSERT INTO `menu`(`order_number`,`multi_select`,`status`) VALUES ('$order_number','$list','$status')";
                 $result_insert  = mysqli_query($conn,$insert_menu);
                 if($result_insert)
                 {
                     $menu_id = mysqli_insert_id($conn);
                     foreach ($translation as $key=>$value){
-                        $insert_translation    = "INSERT INTO `menu_translation`(`menu_id`,`lang_id`,`name`,`slug`) VALUES ('$menu_id','$key','".$value['name']."','".$value['slug']."')";
+                        $insert_translation    = "INSERT INTO `menu_translation`(`menu_id`,`lang_id`,`name`,`slug`,`description`) VALUES ('$menu_id','$key','".$value['name']."','".$value['slug']."','".$value['description']."')";
                         mysqli_query($conn,$insert_translation);
                     }
                 }
@@ -37,7 +41,7 @@
                 {
                     mysqli_query($conn,"DELETE FROM `menu_translation` WHERE `menu_id`=$menu_id");
                     foreach ($translation as $key=>$value){
-                        $insert_translation    = "INSERT INTO `menu_translation`(`menu_id`,`lang_id`,`name`,`slug`) VALUES ('$menu_id','$key','".$value['name']."','".$value['slug']."')";
+                        $insert_translation    = "INSERT INTO `menu_translation`(`menu_id`,`lang_id`,`name`,`slug`,`description`) VALUES ('$menu_id','$key','".$value['name']."','".$value['slug']."','".$value['description']."')";
                         mysqli_query($conn,$insert_translation);
                     }
                 }
@@ -81,7 +85,7 @@
                                         <br>
                                         <div class="form-group">
                                             <label for="exampleFormControlSelect1">Ana kateqoriya</label>
-                                            <select class="form-control" name="parent_id" id="exampleFormControlSelect1">
+                                            <select class="form-control" name="parent_id[]" id="exampleFormControlSelect1" multiple>
                                                 <option value="0">Sec</option>
                                                 <?php
 
@@ -139,6 +143,10 @@
                                                         <label for="exampleFormControlInput1">Slug</label>
                                                         <input type="text" name="translation[<?=$row['id']?>][slug]" class="form-control" id="exampleFormControlInput1" placeholder="Slug">
                                                     </div>
+                                                    <div class="form-group">
+                                                        <label for="exampleFormControlInput1">Text</label>
+                                                        <textarea name="translation[<?=$row['id']?>][description]" cols="40" rows="10" class="form-control editor"  id="editor<?=$row['id']?>" style="visibility: hidden; display: none;"></textarea>
+                                                    </div>
                                                 </div>
                                                 <?php
                                             }
@@ -163,7 +171,9 @@
                                 $menu_row   = mysqli_fetch_assoc($result);   //menu cedvelindeki datalarim goturulur
                                 $resul_tr   = mysqli_query($conn,$sql_tr);
                                 $menu_tr    = mysqli_fetch_all($resul_tr,MYSQLI_ASSOC); //menu_translation cedvelindeki datalarim goturulur
-                                print_r($menu_tr);
+                                print_r($menu_row);
+                                $list_select = explode(',',$menu_row['multi_select']);
+                                print_r($list_select);
                             }
                     ?>
                    <h1 class="h3 mb-2 text-gray-800">Menyu Redakte et</h1>
@@ -175,7 +185,7 @@
                                         <br>
                                         <div class="form-group">
                                             <label for="exampleFormControlSelect1">Ana kateqoriya</label>
-                                            <select class="form-control" name="parent_id" id="exampleFormControlSelect1">
+                                            <select class="form-control" name="parent_id[]" id="exampleFormControlSelect1" multiple>
                                                 <option value="0">Sec</option>
                                                 <?php
 
@@ -183,7 +193,7 @@
                                                 $result = mysqli_query($conn, $select_sql);
                                                 while ($row1 = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
                                                     ?>
-                                                    <option value="<?= $row1['menu_id']; ?>" <?php echo ($menu_row['parent_id'] == $row1['menu_id'])? 'selected':''; ?>><?= $row1['name']; ?></option>
+                                                    <option value="<?= $row1['menu_id']; ?>" <?php echo (in_array($row1['menu_id'],$list_select))? 'selected':''; ?>><?= $row1['name']; ?></option>
                                                     <?php
                                                 }
                                                 ?>
@@ -233,6 +243,12 @@
                                                         <label for="exampleFormControlInput1">Slug</label>
                                                         <input type="text" name="translation[<?=$value['lang_id']?>][slug]" value="<?=$value['slug'];?>" class="form-control" id="exampleFormControlInput1" placeholder="Slug">
                                                     </div>
+                                                    <div class="form-group">
+                                                        <label for="exampleFormControlInput1">Text</label>
+                                                        <textarea name="translation[<?=$value['lang_id']?>][description]" cols="40" rows="10" class="form-control editor"  id="editor<?=$value['lang_id']?>" style="visibility: hidden; display: none;">
+                                                            <?=$value['description'];?>
+                                                        </textarea>
+                                                    </div>
                                                 </div>
                                                 <?php
                                             }
@@ -263,7 +279,17 @@
     <!-- End of Page Wrapper -->
 
     <?php include 'includes/footer.php'; ?>
-
+    <script>
+        var id = 1;
+        $( 'textarea.editor').each( function() {
+            $(this).attr("id","editor"+id);
+            CKEDITOR.replace('editor'+id, {
+                height: '300px',
+                //filebrowserBrowseUrl: siteUrl+'en/admin/filemanager'
+            });
+            id = id + 1;
+        });
+    </script>
 
     </body>
 

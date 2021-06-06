@@ -51,7 +51,7 @@ if($_SESSION['logged_in'] == 1)
                                         <div class="col-sm-12 col-md-6">
                                         </div>
                                         <div class="col-sm-12 col-md-6">
-                                            <a href="form-menu.php" class="btn btn-success">Yarat</a>
+                                            <a href="form_menu.php" class="btn btn-success">Yarat</a>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -83,7 +83,7 @@ if($_SESSION['logged_in'] == 1)
                                                     <tr role="row" class="even">
                                                         <td class="sorting_1"><?=$row['name'];?></td>
                                                         <td>
-                                                            <a href="form-menu.php?menu=<?=$row['id'];?>"   class="btn btn-success">Redakte et</a>
+                                                            <a href="form_menu.php?id=<?=$row['id'];?>"   class="btn btn-success">Redakte et</a>
                                                             <a href="menu.php?id=<?=$row['id'];?>" class="btn btn-danger">Sil</a>
                                                         </td>
                                                     </tr>
